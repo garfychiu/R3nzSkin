@@ -30,8 +30,13 @@ jobs:
         shell: cmd
         run: msbuild hydy100_source/R3nzSkin/R3nzSkin.vcxproj /p:Platform=x64 /p:Configuration=${{ matrix.configuration }}
 
+      - name: List output files (PowerShell)
+        shell: pwsh
+        run: |
+          Get-ChildItem -Recurse hydy100_source | Select-Object FullName
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: R3nzSkin-${{ matrix.configuration }}-x64
-          path: hydy100_source/Release/${{ matrix.configuration }}/R3nzSkin.dll
+          path: hydy100_source/R3nzSkin/Release/${{ matrix.configuration }}/R3nzSkin.dll
