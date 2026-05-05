@@ -1,0 +1,37 @@
+name: Windows
+
+on:
+  push:
+    branches: ["main", "master"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2022]
+        # configuration: [RiotGamesServers, ChinaServer]
+        configuration: [ChinaServer]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@main
+
+      - name: Clone hydy100/R3nzSkin source
+        shell: pwsh
+        run: |
+          git clone --branch main  --depth 1 `
+            https://github.com/hydy100/R3nzSkin.git hydy100_source
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.3.1
+
+      - name: Build
+        shell: cmd
+        run: msbuild R3nzSkin/R3nzSkin.vcxproj /p:Platform=x64 /p:Configuration=${{ matrix.configuration }}
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: R3nzSkin-${{ matrix.configuration }}-x64
+          path: hydy100_source/Release/${{ matrix.configuration }}/R3nzSkin.dll
